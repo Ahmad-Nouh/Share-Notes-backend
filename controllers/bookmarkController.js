@@ -1,4 +1,4 @@
-const BookMark = require('../models/bookmark');
+const {BookMark} = require('../models/bookmark');
 const Joi = require('joi');
 
 async function index (req , res) {
@@ -59,4 +59,5 @@ function validate(bookmark) {
     return Joi.validate(bookmark, schema);
 }
 
+module.exports.validateBookmark = validate;
 module.exports = {index, getById, create, update, remove};

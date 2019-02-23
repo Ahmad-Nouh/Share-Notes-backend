@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const {BookmarkSchema} = require('./bookmark');
 
 const schema = new mongoose.Schema({
     name: {
@@ -16,12 +17,16 @@ const schema = new mongoose.Schema({
         trim: true,
         unique: true
     },
-    bookmarks: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'BookMark'
-        }
-    ],
+    password: {
+        type: String,
+        minlength: 5,
+        maxlength: 255,
+        required: true
+    },
+    bookmarks: {
+        type: [BookmarkSchema],
+        default: []
+    },
     verified: {
         type: Boolean,
         default: false

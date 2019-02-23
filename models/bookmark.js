@@ -32,4 +32,5 @@ const schema = new mongoose.Schema({
 
 const BookMark = mongoose.model('BookMark', schema);
 
-module.exports = BookMark;
+module.exports.BookMark = BookMark;
+module.exports.BookmarkSchema = schema;

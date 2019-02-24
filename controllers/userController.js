@@ -2,18 +2,23 @@ const mongoose = require('mongoose');
 const Joi = require('joi');
 const User = require('../models/user');
 const {validateBookmark} = require('./bookmarkController');
+const bcrypt = require('bcrypt');
+const debug = require('debug')('app:debug');
 
 async function create (req, res) {
+    debug('create');
+    // validate the user
     const {error} = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
-
+    // create user
     let newUser = new User({
         name: req.body.name,
         username: req.body.username,
-        verified: false,
-        verification_code: undefined,
-        bookmarks: []
+        password: req.body.password
     });
+    // hash user password
+    const salt = await bcrypt.genSalt(10);
+    newUser.password = await bcrypt.hash(newUser.password, salt);
 
     newUser = await newUser.save();
     return res.send(newUser);
@@ -28,6 +33,7 @@ async function update (req, res) {
 
     updatedUser.name = req.body.name;
     updatedUser.username = req.body.username;
+    updatedUser.password = req.body.password;
 
     updatedUser = await updatedUser.save();
 
@@ -99,7 +105,8 @@ function validate(user) {
     const schema = {
         name: Joi.string().trim().min(5).max(255).required(),
         username: Joi.string().trim().min(5).max(255).required(),
-        password: Joi.string().min(5).max(255).required()
+        password: Joi.string().min(5).max(255).required(),
+        verified: Joi.boolean().default(false)
     };
 
     return Joi.validate(user, schema);

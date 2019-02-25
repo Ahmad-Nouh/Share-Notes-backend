@@ -4,8 +4,6 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const Joi = require('joi');
 const debug = require('debug')('app:debug');
-const jwt = require('jsonwebtoken');
-const config = require('config');
 
 router.post('/', async (req, res) => {
     const {error} = validate(req.body);
@@ -16,8 +14,8 @@ router.post('/', async (req, res) => {
     const validPassword = await bcrypt.compare(req.body.password, user.password);
     if (!validPassword) return res.status(400).send('invalid username or password..');
 
-    const token = jwt.sign({_id: user._id}, config.get('privateKey'));
-    return res.send(token);
+    const token = user.generateAccessToken();
+    return res.header('x-auth-token', token).send(user);
 });
 
 function validate(user) {

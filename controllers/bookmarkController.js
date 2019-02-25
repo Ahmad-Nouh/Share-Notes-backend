@@ -14,7 +14,7 @@ async function getById (req , res) {
 }
 
 async function create (req, res) {
-    const {error} = validate(req.body);
+    const {error} = validateBookmark(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     let newBookmark = new BookMark({
         title: req.body.title,
@@ -30,7 +30,7 @@ async function create (req, res) {
 async function update (req, res) {
     let newBookmark = await BookMark.findById(req.params.id);
     if (!newBookmark) return res.status(404).send('bookmark not found!!');
-    const {error} = validate(req.body);
+    const {error} = validateBookmark(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     newBookmark.title = req.body.title;
     newBookmark.content = req.body.content;
@@ -47,7 +47,7 @@ async function remove (req, res) {
 }
 
 // validation with joi
-function validate(bookmark) {
+function validateBookmark(bookmark) {
     const schema = {
         title: Joi.string().trim().min(5).max(255).required(),
         content: Joi.string().trim().min(10).max(255).required(),
@@ -59,5 +59,4 @@ function validate(bookmark) {
     return Joi.validate(bookmark, schema);
 }
 
-module.exports.validateBookmark = validate;
-module.exports = {index, getById, create, update, remove};
+module.exports = {index, getById, create, update, remove, validateBookmark};

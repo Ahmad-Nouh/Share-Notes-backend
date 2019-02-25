@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken');
+const config = require('config');
 const mongoose = require('mongoose');
 const {BookmarkSchema} = require('./bookmark');
 
@@ -26,15 +28,12 @@ const schema = new mongoose.Schema({
     bookmarks: {
         type: [BookmarkSchema],
         default: []
-    },
-    verified: {
-        type: Boolean,
-        default: false
-    },
-    verification_code: {
-        type: String
     }
 });
+
+schema.methods.generateAccessToken = function () {
+    return jwt.sign({_id: this._id}, config.get('privateKey'));
+};
 
 const User = mongoose.model('User', schema);
 
